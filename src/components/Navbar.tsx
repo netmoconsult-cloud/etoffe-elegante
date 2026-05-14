@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ShoppingBag, User, Menu, Search, Globe } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "../contexts/CartContext";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/Authcontext";  
 import { useLanguage, Language } from "../contexts/LanguageContext";
 
 export default function Navbar() {

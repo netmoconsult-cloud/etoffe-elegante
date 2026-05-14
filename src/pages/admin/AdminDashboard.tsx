@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useProducts } from "../../contexts/ProductContext";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/Authcontext";
 import { Plus, Edit, Trash2, Package, ShoppingBag, LogOut, Users, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";

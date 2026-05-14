@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useProducts } from "../contexts/ProductContext";
 import { useCart } from "../contexts/CartContext";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/Authcontext";
 import { useLanguage } from "../contexts/LanguageContext";
 
 export default function ProductPage() {
