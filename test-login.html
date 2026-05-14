@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Connexion Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h2>Test connexion Supabase</h2>
+    <button onclick="testLogin()">Tester la connexion</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testLogin() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerText = 'Connexion en cours...';
+            
+            const supabaseUrl = 'https://gnciukpwpniugarazbks.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImduY2l1a3B3cG5pdWdhcmF6YmtzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2OTY1ODYsImV4cCI6MjA5NDI3MjU4Nn0.-2PEmpIslk32UKjdB3cxDuRbnuC2e8y-yf8IrkroumY';
+            
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: 'admin@etoffelegante.com',
+                password: 'admin123'
+            });
+            
+            if (error) {
+                resultDiv.innerText = '❌ Erreur: ' + error.message;
+            } else {
+                resultDiv.innerText = '✅ Connecté avec succès !\nEmail: ' + data.user.email;
+            }
+        }
+    </script>
+</body>
+</html>

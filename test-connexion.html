@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Connexion Supabase</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        button { background: black; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Test de connexion Supabase</h1>
+    
+    <label>URL du projet:</label>
+    <input type="text" id="supabaseUrl" value="https://gnciukpwpniugarazbks.supabase.co" style="width:100%; margin-bottom:10px;">
+    
+    <label>Clé anon publique:</label>
+    <input type="text" id="supabaseKey" placeholder="ta_cle_anon_publique_ici" style="width:100%; margin-bottom:10px;">
+    
+    <label>Email:</label>
+    <input type="email" id="email" value="admin@etoffelegante.com" style="width:100%; margin-bottom:10px;">
+    
+    <label>Mot de passe:</label>
+    <input type="password" id="password" value="admin123" style="width:100%; margin-bottom:20px;">
+    
+    <button onclick="testConnexion()">Tester la connexion</button>
+    
+    <h2>Résultat:</h2>
+    <pre id="resultat">En attente du test...</pre>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        window.testConnexion = async function() {
+            const supabaseUrl = document.getElementById('supabaseUrl').value;
+            const supabaseKey = document.getElementById('supabaseKey').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultatDiv = document.getElementById('resultat');
+            
+            if (!supabaseKey) {
+                resultatDiv.innerHTML = '<span class="error">❌ Entrez votre clé anon publique</span>';
+                return;
+            }
+            
+            resultatDiv.innerHTML = '🔄 Connexion en cours...';
+            
+            try {
+                const { createClient } = await import('@supabase/supabase-js');
+                const supabase = createClient(supabaseUrl, supabaseKey);
+                
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) {
+                    resultatDiv.innerHTML = `<span class="error">❌ Erreur: ${error.message}</span>\n\n` +
+                        `<details><summary>Détails complets</summary><pre>${JSON.stringify(error, null, 2)}</pre></details>`;
+                } else {
+                    resultatDiv.innerHTML = `<span class="success">✅ Connexion réussie !</span>\n\n` +
+                        `👤 Utilisateur: ${data.user.email}\n` +
+                        `🆔 ID: ${data.user.id}\n` +
+                        `🔑 Session active: ${!!data.session}\n\n` +
+                        `<details><summary>Détails complets</summary><pre>${JSON.stringify(data, null, 2)}</pre></details>`;
+                }
+            } catch (err) {
+                resultatDiv.innerHTML = `<span class="error">❌ Exception: ${err.message}</span>`;
+            }
+        };
+    </script>
+</body>
+</html>
