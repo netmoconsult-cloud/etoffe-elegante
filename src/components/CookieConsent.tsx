@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Cookie, Shield, CheckCircle, XCircle } from "lucide-react";
 import { supabase } from "../lib/supabase";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/Authcontext";
 
 export default function CookieConsent() {
   const [isVisible, setIsVisible] = useState(false);
