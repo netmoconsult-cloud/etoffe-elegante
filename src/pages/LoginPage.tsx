@@ -54,7 +54,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-black"
-              placeholder="admin@etoffelegante.com"
+              #placeholder="admin@etoffelegante.com"
             />
           </div>
 
@@ -66,7 +66,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-black"
-              placeholder="••••••"
+              #placeholder="••••••"
             />
           </div>
 
