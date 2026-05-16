@@ -30,46 +30,63 @@ export default function ShopPage() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-20 text-center">
-        <p className="text-neutral-500">{t("chargement")}</p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
+        <p className="text-neutral-500 text-sm sm:text-base">{t("chargement")}</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl font-light">{t("nos_collections")}</h1>
-        <div className="flex justify-center gap-8 mt-6">
-          <button onClick={() => setActiveCategory("all")} className={`pb-2 text-sm uppercase tracking-wide ${activeCategory === "all" ? "border-b-2 border-black" : "text-neutral-400"}`}>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="text-center mb-8 sm:mb-12">
+        <h1 className="text-2xl sm:text-3xl font-light">{t("nos_collections")}</h1>
+        
+        {/* Filtres responsives - wrap sur mobile */}
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-6 md:gap-8 mt-4 sm:mt-6">
+          <button 
+            onClick={() => setActiveCategory("all")} 
+            className={`pb-1 sm:pb-2 text-xs sm:text-sm uppercase tracking-wide transition ${
+              activeCategory === "all" ? "border-b-2 border-black text-black" : "text-neutral-400 hover:text-black"
+            }`}
+          >
             {t("tous")} ({products.length})
           </button>
-          <button onClick={() => setActiveCategory("tissu")} className={`pb-2 text-sm uppercase tracking-wide ${activeCategory === "tissu" ? "border-b-2 border-black" : "text-neutral-400"}`}>
+          <button 
+            onClick={() => setActiveCategory("tissu")} 
+            className={`pb-1 sm:pb-2 text-xs sm:text-sm uppercase tracking-wide transition ${
+              activeCategory === "tissu" ? "border-b-2 border-black text-black" : "text-neutral-400 hover:text-black"
+            }`}
+          >
             {t("tissus")} ({tissusCount})
           </button>
-          <button onClick={() => setActiveCategory("sac")} className={`pb-2 text-sm uppercase tracking-wide ${activeCategory === "sac" ? "border-b-2 border-black" : "text-neutral-400"}`}>
+          <button 
+            onClick={() => setActiveCategory("sac")} 
+            className={`pb-1 sm:pb-2 text-xs sm:text-sm uppercase tracking-wide transition ${
+              activeCategory === "sac" ? "border-b-2 border-black text-black" : "text-neutral-400 hover:text-black"
+            }`}
+          >
             {t("sacs")} ({sacsCount})
           </button>
         </div>
 
         {searchQuery && (
-          <p className="text-neutral-500 text-sm mt-4">
+          <p className="text-neutral-500 text-xs sm:text-sm mt-4 sm:mt-6">
             {t("resultats_pour")} : <span className="font-medium">"{searchQuery}"</span> ({filtered.length} {t("produit")}{filtered.length > 1 ? "s" : ""})
           </p>
         )}
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-neutral-400">{t("aucun_produit_trouve")}</p>
+        <div className="text-center py-12 sm:py-20">
+          <p className="text-neutral-400 text-sm sm:text-base">{t("aucun_produit_trouve")}</p>
           {products.length === 0 && (
-            <p className="text-sm text-neutral-400 mt-2">
+            <p className="text-xs sm:text-sm text-neutral-400 mt-2">
               {t("aucun_produit_base")}
             </p>
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {filtered.map(product => <ProductCard key={product.id} product={product} />)}
         </div>
       )}
