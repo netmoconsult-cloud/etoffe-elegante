@@ -10,5 +10,5 @@ export const socialLinks = {
 // URLs par défaut (à remplacer par tes vraies URLs)
 export const defaultSocialUrls = {
   instagram: "https://www.instagram.com/etoffe_elegantesalmanoor?igsh=Yzl1cGV0dno5d2c3",
-  facebook: "https://www.facebook.com/share/1Asj12nC2e/?mibextid=wwXIfr",
+  facebook: "https://www.facebook.com/profile.php?id=100089789311007&mibextid=wwXIfr&mibextid=wwXIfr",
 };
