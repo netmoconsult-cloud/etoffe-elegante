@@ -35,22 +35,26 @@ export default function ProductCard({ product }: { product: Product }) {
   };
 
   return (
-    <Link to={`/product/${product.id}`} className="group">
+    <Link to={`/product/${product.id}`} className="group block">
       <div className="bg-white rounded-xl overflow-hidden hover:shadow-lg transition">
         <img 
           src={product.image} 
           alt={product.name} 
-          className="w-full h-64 object-cover group-hover:scale-105 transition duration-500" 
+          className="w-full h-48 xs:h-56 sm:h-64 object-cover group-hover:scale-105 transition duration-500" 
         />
-        <div className="p-4">
-          <h3 className="font-medium">{product.name}</h3>
-          <p className="text-neutral-500 text-sm mt-1">{product.price.toLocaleString()} FCFA</p>
+        <div className="p-3 sm:p-4">
+          <h3 className="font-medium text-sm sm:text-base line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem]">
+            {product.name}
+          </h3>
+          <p className="text-neutral-500 text-xs sm:text-sm mt-1">
+            {product.price.toLocaleString()} FCFA
+          </p>
           {product.category === "tissu" && (
             <p className="text-xs text-neutral-400 mt-0.5">📏 Prix au mètre</p>
           )}
           <button 
             onClick={handleAddToCart}
-            className="mt-3 w-full border border-black py-2 rounded-full text-sm hover:bg-black hover:text-white transition"
+            className="mt-2 sm:mt-3 w-full border border-black py-1.5 sm:py-2 rounded-full text-xs sm:text-sm hover:bg-black hover:text-white transition"
           >
             {t("ajouter_au_panier")}
           </button>
