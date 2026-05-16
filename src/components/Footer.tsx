@@ -20,7 +20,7 @@ export default function Footer() {
   ];
 
   // Lien Instagram pour NETMO
-  const netmoInstagram = "https://www.instagram.com/netmoanalytics?igsh=am1tY3MwY2VpNm93";
+  const netmoInstagram = "https://www.instagram.com/netmoconsult?igsh=am1tY3MwY2VpNm93";
 
   return (
     <footer className="bg-white border-t border-gray-100 py-10 mt-auto">
