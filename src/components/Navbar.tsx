@@ -92,11 +92,10 @@ export default function Navbar() {
 
             {/* Zone utilisateur connecté avec message de bienvenue */}
             {user ? (
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-neutral-600 hidden md:inline">
-                  👋 Bonjour, <span className="font-medium text-black">{userName}</span>
-                </span>
-                <button onClick={logout} className="hover:opacity-60 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-neutral-400 hidden md:inline">Bonjour,</span>
+                <span className="text-sm font-medium text-black hidden md:inline">{userName}</span>
+                <button onClick={logout} className="hover:opacity-60 text-sm ml-2">
                   {t("deconnexion")}
                 </button>
               </div>
