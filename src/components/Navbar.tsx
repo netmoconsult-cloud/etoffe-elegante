@@ -22,6 +22,9 @@ export default function Navbar() {
     }
   };
 
+  // Récupérer le nom de l'utilisateur
+  const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || "Invité";
+
   // Liste des langues disponibles
   const languages = [
     { code: "fr", name: "Français", flag: "🇫🇷" },
@@ -87,15 +90,22 @@ export default function Navbar() {
               </div>
             </div>
 
+            {/* Zone utilisateur connecté avec message de bienvenue */}
             {user ? (
-              <button onClick={logout} className="hover:opacity-60 text-sm">
-                {t("deconnexion")}
-              </button>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-neutral-600 hidden md:inline">
+                  👋 Bonjour, <span className="font-medium text-black">{userName}</span>
+                </span>
+                <button onClick={logout} className="hover:opacity-60 text-sm">
+                  {t("deconnexion")}
+                </button>
+              </div>
             ) : (
               <Link to="/login" className="hover:opacity-60">
                 <User size={18} />
               </Link>
             )}
+
             <Link to="/cart" className="relative hover:opacity-60">
               <ShoppingBag size={18} />
               {getCartCount() > 0 && (
@@ -151,8 +161,17 @@ export default function Navbar() {
               </div>
             </div>
             
+            {/* Message de bienvenue mobile */}
             {user && (
-              <button onClick={() => { logout(); setIsOpen(false); }} className="block w-full text-left border-t pt-3 mt-2">
+              <div className="border-t pt-3 mt-2">
+                <p className="text-sm text-neutral-600">
+                  👋 Bonjour, <span className="font-medium text-black">{userName}</span>
+                </p>
+              </div>
+            )}
+            
+            {user && (
+              <button onClick={() => { logout(); setIsOpen(false); }} className="block w-full text-left">
                 {t("deconnexion")}
               </button>
             )}
