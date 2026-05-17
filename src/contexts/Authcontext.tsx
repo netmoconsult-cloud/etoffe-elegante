@@ -19,32 +19,44 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
 
   useEffect(() => {
-    // Vérifier la session au chargement
+    // Vérifier la session Supabase au chargement
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setUser({
           id: session.user.id,
           email: session.user.email!,
-          name: session.user.user_metadata?.name || session.user.email!,
+          name: session.user.user_metadata?.name || session.user.email!.split('@')[0],
           isAdmin: session.user.email === 'admin@etoffelegante.com'
         });
+        localStorage.setItem('user', JSON.stringify({
+          id: session.user.id,
+          email: session.user.email!,
+          name: session.user.user_metadata?.name || session.user.email!.split('@')[0],
+          isAdmin: session.user.email === 'admin@etoffelegante.com'
+        }));
       }
     });
 
     // Écouter les changements de connexion
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        setUser({
+        const userData = {
           id: session.user.id,
           email: session.user.email!,
-          name: session.user.user_metadata?.name || session.user.email!,
+          name: session.user.user_metadata?.name || session.user.email!.split('@')[0],
           isAdmin: session.user.email === 'admin@etoffelegante.com'
-        });
+        };
+        setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
       } else {
         setUser(null);
+        localStorage.removeItem('user');
       }
     });
 
@@ -54,11 +66,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       console.error('Login error:', error.message);
       return false;
     }
+    
+    const userData = {
+      id: data.user.id,
+      email: data.user.email!,
+      name: data.user.user_metadata?.name || email.split('@')[0],
+      isAdmin: email === 'admin@etoffelegante.com'
+    };
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
     return true;
   };
 
@@ -77,6 +98,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     await supabase.auth.signOut();
+    setUser(null);
+    localStorage.removeItem('user');
   };
 
   const isAdmin = user?.isAdmin || false;
