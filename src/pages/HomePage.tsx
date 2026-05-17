@@ -11,18 +11,21 @@ export default function HomePage() {
   const { user } = useAuth();
   const featuredProducts = products.filter(p => p.featured).slice(0, 4);
   
-  const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || "invité";
+  const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || "Invité";
   const currentHour = new Date().getHours();
   const greeting = currentHour < 12 ? "Bonjour" : currentHour < 18 ? "Bon après-midi" : "Bonsoir";
 
   return (
     <div>
-      {/* Message de bienvenue personnalisé */}
+      {/* Message de bienvenue personnalisé - Version élégante */}
       {user && (
-        <div className="bg-gradient-to-r from-neutral-50 to-white py-4 text-center border-b">
-          <p className="text-neutral-700 text-sm sm:text-base">
-            {greeting}, <span className="font-semibold text-black">{userName}</span> ! 
-            <span className="hidden sm:inline"> {t("welcome_message") || "Que souhaitez-vous découvrir aujourd'hui ?"}</span>
+        <div className="bg-white/80 backdrop-blur-sm py-3 text-center border-b border-neutral-100">
+          <p className="text-neutral-400 text-xs uppercase tracking-wide">
+            Bon retour parmi nous
+          </p>
+          <p className="text-neutral-700 text-sm mt-0.5">
+            <span className="font-medium text-black">{userName}</span>
+            <span className="text-neutral-400"> — Que souhaitez-vous découvrir aujourd'hui ?</span>
           </p>
         </div>
       )}
