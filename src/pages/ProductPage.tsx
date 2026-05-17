@@ -1,9 +1,11 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Heart, Truck, Shield, RefreshCw } from "lucide-react";
 import { useProducts } from "../contexts/ProductContext";
 import { useCart } from "../contexts/CartContext";
 import { useAuth } from "../contexts/Authcontext";
 import { useLanguage } from "../contexts/LanguageContext";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export default function ProductPage() {
   const { id } = useParams();
@@ -12,8 +14,33 @@ export default function ProductPage() {
   const { user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [quantity, setQuantity] = useState(1);
+  const [productViewed, setProductViewed] = useState(false);
 
   const product = getProduct(Number(id));
+
+  // Enregistrer la vue du produit (pour statistiques)
+  useEffect(() => {
+    if (product && !productViewed) {
+      const saveProductView = async () => {
+        try {
+          await supabase.from("product_views").insert([
+            {
+              product_id: product.id,
+              product_name: product.name,
+              user_id: user?.id || null,
+              viewed_at: new Date().toISOString()
+            }
+          ]);
+          console.log("✅ Vue produit enregistrée");
+        } catch (err) {
+          console.error("Erreur enregistrement vue:", err);
+        }
+      };
+      saveProductView();
+      setProductViewed(true);
+    }
+  }, [product, user, productViewed]);
 
   if (!product) {
     return (
@@ -29,7 +56,7 @@ export default function ProductPage() {
       navigate("/login", { 
         state: { 
           from: `/product/${product.id}`, 
-          message: t("connecter_ajouter_panier")
+          message: "Veuillez vous connecter pour ajouter au panier"
         } 
       });
       return;
@@ -43,36 +70,112 @@ export default function ProductPage() {
         image: product.image,
         category: product.category
       },
-      1
+      quantity
     );
     alert(`${product.name} ${t("ajoute_au_panier")}`);
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <Link to="/shop" className="inline-flex items-center gap-2 text-sm mb-8 hover:opacity-60">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <Link to="/shop" className="inline-flex items-center gap-2 text-sm mb-6 sm:mb-8 hover:opacity-60">
         <ArrowLeft size={16} /> {t("retour")}
       </Link>
 
-      <div className="grid md:grid-cols-2 gap-12">
+      <div className="grid md:grid-cols-2 gap-8 sm:gap-12">
+        {/* Image */}
         <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden">
           <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
         </div>
 
+        {/* Infos produit */}
         <div>
-          <span className="text-sm text-neutral-500 uppercase tracking-wide">{product.category === "tissu" ? t("tissus") : t("sacs")}</span>
-          <h1 className="text-3xl md:text-4xl font-light mt-2 mb-4">{product.name}</h1>
-          <p className="text-neutral-600 mb-6">{product.description || t("description_defaut")}</p>
-          <div className="text-3xl font-medium mb-8">{product.price.toLocaleString()} FCFA</div>
-          {product.category === "tissu" && (
-            <p className="text-sm text-neutral-500 mb-4">{t("prix_unitaire")}</p>
-          )}
+          <span className="text-sm text-neutral-500 uppercase tracking-wide">
+            {product.category === "tissu" ? t("tissus") : t("sacs")}
+          </span>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-light mt-2 mb-4">{product.name}</h1>
+          
+          {/* Description complète */}
+          <div className="prose prose-sm text-neutral-600 mb-6">
+            <p>{product.description || t("description_defaut")}</p>
+          </div>
+
+          {/* Détails supplémentaires */}
+          <div className="border-t border-b py-4 mb-6 space-y-2 text-sm">
+            {product.sub_category && (
+              <div className="flex justify-between">
+                <span className="text-neutral-500">Collection :</span>
+                <span className="font-medium">{product.sub_category}</span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span className="text-neutral-500">Disponibilité :</span>
+              <span className={product.stock > 0 ? "text-green-600" : "text-red-500"}>
+                {product.stock > 0 ? `En stock (${product.stock} unités)` : "Rupture de stock"}
+              </span>
+            </div>
+            {product.category === "tissu" && (
+              <div className="flex justify-between">
+                <span className="text-neutral-500">Unité :</span>
+                <span className="font-medium">Prix au mètre</span>
+              </div>
+            )}
+            {product.featured && (
+              <div className="flex justify-between">
+                <span className="text-neutral-500">Statut :</span>
+                <span className="text-amber-600 font-medium">⭐ Produit en vedette</span>
+              </div>
+            )}
+          </div>
+
+          {/* Prix et quantité */}
+          <div className="text-2xl sm:text-3xl font-medium mb-4">
+            {product.price.toLocaleString()} FCFA
+            {product.category === "tissu" && <span className="text-sm text-neutral-500 ml-2">/ mètre</span>}
+          </div>
+
+          {/* Sélecteur quantité */}
+          <div className="flex items-center gap-4 mb-6">
+            <span className="text-sm text-neutral-500">Quantité :</span>
+            <div className="flex items-center border rounded-full">
+              <button 
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="px-3 py-1 hover:bg-gray-100 rounded-l-full"
+              >
+                -
+              </button>
+              <span className="w-12 text-center">{quantity}</span>
+              {product.category === "tissu" && <span className="text-xs text-neutral-400">m</span>}
+              <button 
+                onClick={() => setQuantity(quantity + 1)}
+                className="px-3 py-1 hover:bg-gray-100 rounded-r-full"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
           <button
             onClick={handleAddToCart}
-            className="w-full bg-black text-white py-3 rounded-full hover:opacity-80 transition"
+            disabled={product.stock === 0}
+            className={`w-full py-3 rounded-full transition flex items-center justify-center gap-2 ${
+              product.stock > 0 
+                ? "bg-black text-white hover:opacity-80" 
+                : "bg-neutral-300 text-neutral-500 cursor-not-allowed"
+            }`}
           >
-            {t("ajouter_au_panier")}
+            <Heart size={18} />
+            {product.stock > 0 ? t("ajouter_au_panier") : "Indisponible"}
           </button>
+
+          {/* Livraison */}
+          <div className="mt-8 p-4 bg-neutral-50 rounded-xl">
+            <h4 className="font-medium mb-3">Informations de livraison</h4>
+            <div className="space-y-2 text-sm text-neutral-600">
+              <div className="flex items-center gap-2"><Truck size={16} /> Livraison à Dakar : 2000 FCFA</div>
+              <div className="flex items-center gap-2"><Shield size={16} /> Paiement sécurisé (Wave, Orange Money)</div>
+              <div className="flex items-center gap-2"><RefreshCw size={16} /> Retour sous 14 jours</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

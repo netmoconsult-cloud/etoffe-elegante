@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useProducts } from "../../contexts/ProductContext";
 import { useAuth } from "../../contexts/Authcontext";
-import { Plus, Edit, Trash2, Package, ShoppingBag, LogOut, Users, DollarSign } from "lucide-react";
+import { Plus, Edit, Trash2, Package, ShoppingBag, LogOut, Users, DollarSign, TrendingUp, Eye, Cookie } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../contexts/LanguageContext";
+import { supabase } from "../../lib/supabase";
 
 export default function AdminDashboard() {
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
@@ -12,13 +13,67 @@ export default function AdminDashboard() {
   const { t } = useLanguage();
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
+  
+  // Statistiques avancées
+  const [topProducts, setTopProducts] = useState<any[]>([]);
+  const [recentViews, setRecentViews] = useState<any[]>([]);
+  const [cookieStats, setCookieStats] = useState<any[]>([]);
+  const [usersList, setUsersList] = useState<any[]>([]);
+  const [loadingStats, setLoadingStats] = useState(true);
 
-  // Calcul des statistiques
+  // Calcul des statistiques produits
   const totalProducts = products.length;
   const totalStock = products.reduce((sum, p) => sum + (p.stock || 0), 0);
   const totalValue = products.reduce((sum, p) => sum + (p.price * (p.stock || 0)), 0);
   const tissusCount = products.filter(p => p.category === "tissu").length;
   const sacsCount = products.filter(p => p.category === "sac").length;
+
+  // Charger les statistiques avancées
+  useEffect(() => {
+    const fetchStats = async () => {
+      setLoadingStats(true);
+      try {
+        // 1. Vues produits
+        const { data: views } = await supabase
+          .from('product_views')
+          .select('product_name, viewed_at')
+          .order('viewed_at', { ascending: false })
+          .limit(20);
+        setRecentViews(views || []);
+
+        // 2. Top produits (agrégation manuelle)
+        if (views && views.length > 0) {
+          const productCount: { [key: string]: number } = {};
+          views.forEach((v: any) => {
+            productCount[v.product_name] = (productCount[v.product_name] || 0) + 1;
+          });
+          const sorted = Object.entries(productCount)
+            .map(([name, count]) => ({ product_name: name, count }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5);
+          setTopProducts(sorted);
+        }
+
+        // 3. Cookies consentements
+        const { data: cookies } = await supabase
+          .from('cookie_consents')
+          .select('consent_type, created_at, ip_address')
+          .order('created_at', { ascending: false })
+          .limit(10);
+        setCookieStats(cookies || []);
+
+        // 4. Utilisateurs (via Supabase Auth)
+        const { data: { users } } = await supabase.auth.admin.listUsers();
+        setUsersList(users || []);
+        
+      } catch (err) {
+        console.error("Erreur chargement stats:", err);
+      }
+      setLoadingStats(false);
+    };
+    
+    fetchStats();
+  }, []);
 
   const handleDelete = (id: number) => {
     if (window.confirm(t("confirmer_suppression"))) {
@@ -93,10 +148,107 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-neutral-400 uppercase tracking-wide">{t("clients")}</p>
-                <p className="text-2xl font-bold">0</p>
+                <p className="text-2xl font-bold">{usersList.length}</p>
               </div>
               <Users className="w-8 h-8 text-amber-500" />
             </div>
+          </div>
+        </div>
+
+        {/* Statistiques avancées */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          
+          {/* Produits les plus consultés */}
+          <div className="bg-white rounded-xl p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp size={20} className="text-orange-500" />
+              <h3 className="font-medium">🔥 Produits les plus consultés</h3>
+            </div>
+            {loadingStats ? (
+              <p className="text-neutral-400 text-sm text-center py-4">Chargement...</p>
+            ) : topProducts.length === 0 ? (
+              <p className="text-neutral-400 text-sm text-center py-4">Aucune donnée pour le moment</p>
+            ) : (
+              <div className="space-y-3">
+                {topProducts.map((p, i) => (
+                  <div key={i} className="flex justify-between items-center border-b pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-neutral-500">#{i+1}</span>
+                      <span className="text-sm">{p.product_name}</span>
+                    </div>
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">{p.count} vues</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Dernières activités / vues */}
+          <div className="bg-white rounded-xl p-5 shadow-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <Eye size={20} className="text-green-500" />
+              <h3 className="font-medium">👁️ Derniers produits consultés</h3>
+            </div>
+            {loadingStats ? (
+              <p className="text-neutral-400 text-sm text-center py-4">Chargement...</p>
+            ) : recentViews.length === 0 ? (
+              <p className="text-neutral-400 text-sm text-center py-4">Aucune activité récente</p>
+            ) : (
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {recentViews.map((view, i) => (
+                  <div key={i} className="text-sm text-neutral-600 border-b pb-1">
+                    <span className="font-medium">{view.product_name}</span>
+                    <span className="text-xs text-neutral-400 ml-2">
+                      {new Date(view.viewed_at).toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Cookies consentements */}
+        <div className="bg-white rounded-xl shadow-sm mb-8">
+          <div className="px-6 py-4 border-b flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Cookie size={20} className="text-neutral-500" />
+              <h2 className="text-lg font-light">🍪 Consentements cookies récents</h2>
+            </div>
+            <span className="text-xs text-neutral-400 bg-neutral-100 px-2 py-1 rounded-full">
+              {cookieStats.length} enregistrements
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr className="text-left text-xs uppercase tracking-wider">
+                  <th className="px-6 py-3">Date</th>
+                  <th className="px-6 py-3">Type</th>
+                  <th className="px-6 py-3">Adresse IP</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {cookieStats.length === 0 ? (
+                  <tr><td colSpan={3} className="px-6 py-8 text-center text-neutral-400">Aucun consentement enregistré</td></tr>
+                ) : (
+                  cookieStats.map((c, i) => (
+                    <tr key={i} className="hover:bg-gray-50">
+                      <td className="px-6 py-3 text-sm">{new Date(c.created_at).toLocaleString()}</td>
+                      <td className="px-6 py-3">
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          c.consent_type === "accepted" ? "bg-green-100 text-green-700" :
+                          c.consent_type === "essential" ? "bg-blue-100 text-blue-700" : "bg-red-100 text-red-700"
+                        }`}>
+                          {c.consent_type === "accepted" ? "Accepté" : c.consent_type === "essential" ? "Essentiels" : "Refusé"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 text-xs text-neutral-500">{c.ip_address || "-"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -129,17 +281,11 @@ export default function AdminDashboard() {
               </thead>
               <tbody>
                 {products.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="text-center py-8 text-neutral-400">
-                      {t("aucun_produit_admin")}
-                    </td>
-                  </tr>
+                  <tr><td colSpan={6} className="text-center py-8 text-neutral-400">{t("aucun_produit_admin")}</td></tr>
                 ) : (
                   products.map(product => (
                     <tr key={product.id} className="border-b hover:bg-gray-50">
-                      <td className="px-4 py-3">
-                        <img src={product.image} alt={product.name} className="w-10 h-10 object-cover rounded" />
-                      </td>
+                      <td className="px-4 py-3"><img src={product.image} alt={product.name} className="w-10 h-10 object-cover rounded" /></td>
                       <td className="px-4 py-3 font-medium text-sm">{product.name}</td>
                       <td className="px-4 py-3">
                         <span className={`text-xs px-2 py-1 rounded-full ${product.category === "tissu" ? "bg-blue-100 text-blue-700" : "bg-purple-100 text-purple-700"}`}>
@@ -151,18 +297,14 @@ export default function AdminDashboard() {
                         <span className={`text-sm ${(product.stock || 0) < 10 ? "text-red-500 font-medium" : "text-neutral-600"}`}>
                           {product.stock || 0}
                         </span>
-                       </td>
+                      </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-2">
-                          <button onClick={() => { setEditingProduct(product); setShowModal(true); }} className="text-neutral-500 hover:text-black">
-                            <Edit size={16} />
-                          </button>
-                          <button onClick={() => handleDelete(product.id)} className="text-neutral-500 hover:text-red-600">
-                            <Trash2 size={16} />
-                          </button>
+                          <button onClick={() => { setEditingProduct(product); setShowModal(true); }} className="text-neutral-500 hover:text-black"><Edit size={16} /></button>
+                          <button onClick={() => handleDelete(product.id)} className="text-neutral-500 hover:text-red-600"><Trash2 size={16} /></button>
                         </div>
-                       </td>
-                     </tr>
+                      </td>
+                    </tr>
                   ))
                 )}
               </tbody>
