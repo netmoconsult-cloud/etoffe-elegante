@@ -62,9 +62,18 @@ export default function AdminDashboard() {
           .limit(10);
         setCookieStats(cookies || []);
 
-        // 4. Utilisateurs (via Supabase Auth)
-        const { data: { users } } = await supabase.auth.admin.listUsers();
-        setUsersList(users || []);
+        // 4. Utilisateurs (via la vue user_profiles)
+        const { data: users, error } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!error && users) {
+          setUsersList(users);
+        } else {
+          console.error("Erreur chargement utilisateurs:", error);
+          setUsersList([]);
+        }
         
       } catch (err) {
         console.error("Erreur chargement stats:", err);
@@ -244,6 +253,49 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-3 text-xs text-neutral-500">{c.ip_address || "-"}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Liste des clients */}
+        <div className="bg-white rounded-xl shadow-sm mb-8">
+          <div className="px-6 py-4 border-b flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Users size={20} className="text-neutral-500" />
+              <h2 className="text-lg font-light">👥 Clients inscrits</h2>
+            </div>
+            <span className="text-xs text-neutral-400 bg-neutral-100 px-2 py-1 rounded-full">
+              {usersList.length} inscrits
+            </span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr className="text-left text-xs uppercase tracking-wider">
+                  <th className="px-6 py-3">Email</th>
+                  <th className="px-6 py-3">Nom</th>
+                  <th className="px-6 py-3">Inscrit le</th>
+                  <th className="px-6 py-3">Dernière connexion</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {usersList.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-8 text-center text-neutral-400">
+                      Aucun client inscrit
+                    </td>
+                  </tr>
+                ) : (
+                  usersList.map((u) => (
+                    <tr key={u.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-3 text-sm">{u.email}</td>
+                      <td className="px-6 py-3 text-sm">{u.name || "-"}</td>
+                      <td className="px-6 py-3 text-sm">{new Date(u.created_at).toLocaleDateString()}</td>
+                      <td className="px-6 py-3 text-sm">{u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString() : "-"}</td>
                     </tr>
                   ))
                 )}
