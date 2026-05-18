@@ -9,7 +9,7 @@ import { supabase } from "../lib/supabase";
 
 export default function ProductPage() {
   const { id } = useParams();
-  const { getProduct } = useProducts();
+  const { products } = useProducts();
   const { addToCart } = useCart();
   const { user } = useAuth();
   const { t } = useLanguage();
@@ -17,9 +17,10 @@ export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [productViewed, setProductViewed] = useState(false);
 
-  const product = getProduct(Number(id));
+  // Trouver le produit
+  const product = products.find(p => p.id === Number(id));
 
-  // Enregistrer la vue du produit (pour statistiques)
+  // Enregistrer la vue
   useEffect(() => {
     if (product && !productViewed) {
       const saveProductView = async () => {
@@ -82,29 +83,26 @@ export default function ProductPage() {
       </Link>
 
       <div className="grid md:grid-cols-2 gap-8 sm:gap-12">
-        {/* Image */}
         <div className="aspect-square bg-neutral-100 rounded-2xl overflow-hidden">
           <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
         </div>
 
-        {/* Infos produit */}
         <div>
           <span className="text-sm text-neutral-500 uppercase tracking-wide">
             {product.category === "tissu" ? t("tissus") : t("sacs")}
           </span>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-light mt-2 mb-4">{product.name}</h1>
           
-          {/* Description complète */}
           <div className="prose prose-sm text-neutral-600 mb-6">
             <p>{product.description || t("description_defaut")}</p>
           </div>
 
-          {/* Détails supplémentaires */}
           <div className="border-t border-b py-4 mb-6 space-y-2 text-sm">
-            {product.sub_category && (
+            {/* Vérification avant d'afficher sub_category */}
+            {(product as any).sub_category && (
               <div className="flex justify-between">
                 <span className="text-neutral-500">Collection :</span>
-                <span className="font-medium">{product.sub_category}</span>
+                <span className="font-medium">{(product as any).sub_category}</span>
               </div>
             )}
             <div className="flex justify-between">
@@ -127,13 +125,11 @@ export default function ProductPage() {
             )}
           </div>
 
-          {/* Prix et quantité */}
           <div className="text-2xl sm:text-3xl font-medium mb-4">
             {product.price.toLocaleString()} FCFA
             {product.category === "tissu" && <span className="text-sm text-neutral-500 ml-2">/ mètre</span>}
           </div>
 
-          {/* Sélecteur quantité */}
           <div className="flex items-center gap-4 mb-6">
             <span className="text-sm text-neutral-500">Quantité :</span>
             <div className="flex items-center border rounded-full">
@@ -167,7 +163,6 @@ export default function ProductPage() {
             {product.stock > 0 ? t("ajouter_au_panier") : "Indisponible"}
           </button>
 
-          {/* Livraison */}
           <div className="mt-8 p-4 bg-neutral-50 rounded-xl">
             <h4 className="font-medium mb-3">Informations de livraison</h4>
             <div className="space-y-2 text-sm text-neutral-600">
