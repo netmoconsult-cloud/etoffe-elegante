@@ -12,10 +12,12 @@ interface LanguageContextType {
 const translations: Record<Language, Record<string, string>> = {
   fr: {
     // Navigation
+    accueil: "Accueil",
     tissus: "Tissus",
     sacs: "Sacs",
     nouveautes: "Nouveautés",
     apropos: "À propos",
+    contact: "Contact",
     admin: "Admin",
     connexion: "Connexion",
     inscription: "Inscription",
@@ -40,6 +42,7 @@ const translations: Record<Language, Record<string, string>> = {
     nos_collections: "Nos collections",
     tous: "Tous",
     aucun_produit: "Aucun produit",
+    aucun_produit_trouve: "Aucun produit trouvé",
     ajouter_au_panier: "Ajouter au panier",
     ajoute_au_panier: "a été ajouté au panier",
     
@@ -109,13 +112,24 @@ const translations: Record<Language, Record<string, string>> = {
     mdp_incorrect: "Email ou mot de passe incorrect",
     email_utilise: "Cet email est déjà utilisé",
     mdp_non_correspondent: "Les mots de passe ne correspondent pas",
+    
+    // Jours
+    dimanche: "Dimanche",
+    lundi: "Lundi",
+    mardi: "Mardi",
+    mercredi: "Mercredi",
+    jeudi: "Jeudi",
+    vendredi: "Vendredi",
+    samedi: "Samedi",
   },
   en: {
     // Navigation
+    accueil: "Home",
     tissus: "Fabrics",
     sacs: "Bags",
     nouveautes: "New Arrivals",
     apropos: "About",
+    contact: "Contact",
     admin: "Admin",
     connexion: "Login",
     inscription: "Sign Up",
@@ -140,6 +154,7 @@ const translations: Record<Language, Record<string, string>> = {
     nos_collections: "Our Collections",
     tous: "All",
     aucun_produit: "No products found",
+    aucun_produit_trouve: "No products found",
     ajouter_au_panier: "Add to Cart",
     ajoute_au_panier: "has been added to cart",
     
@@ -209,47 +224,48 @@ const translations: Record<Language, Record<string, string>> = {
     mdp_incorrect: "Incorrect email or password",
     email_utilise: "Email already in use",
     mdp_non_correspondent: "Passwords do not match",
+    
+    // Days
+    dimanche: "Sunday",
+    lundi: "Monday",
+    mardi: "Tuesday",
+    mercredi: "Wednesday",
+    jeudi: "Thursday",
+    vendredi: "Friday",
+    samedi: "Saturday",
   },
   es: {
-    // Navigation
+    accueil: "Inicio",
     tissus: "Telas",
     sacs: "Bolsos",
     nouveautes: "Novedades",
     apropos: "Sobre",
+    contact: "Contacto",
     admin: "Admin",
     connexion: "Iniciar sesión",
     inscription: "Registrarse",
     deconnexion: "Cerrar sesión",
     recherche: "Buscar...",
     panier: "Carrito",
-    
-    // Home
     hero_title: "Telas y bolsos elegantes",
     hero_subtitle: "Colecciones auténticas y modernas para revelar tu estilo",
     voir_tissus: "Ver telas",
     voir_sacs: "Ver bolsos",
     produits_populaires: "Productos populares",
-    
-    // Services
     livraison_rapide: "Envío rápido",
     paiement_securise: "Pago seguro",
     retour_facile: "Devolución fácil",
     whatsapp: "WhatsApp 24/7",
-    
-    // Shop
     nos_collections: "Nuestras colecciones",
     tous: "Todos",
     aucun_produit: "No hay productos",
+    aucun_produit_trouve: "No se encontraron productos",
     ajouter_au_panier: "Añadir al carrito",
     ajoute_au_panier: "ha sido añadido al carrito",
-    
-    // Product
     retour: "Volver",
     description: "Descripción",
     stock: "Stock",
     en_vedette: "Destacado",
-    
-    // Cart
     mon_panier: "Mi carrito",
     vide: "Tu carrito está vacío",
     decouvrir_boutique: "Descubrir tienda",
@@ -262,8 +278,6 @@ const translations: Record<Language, Record<string, string>> = {
     gratuite: "Gratis",
     vider_panier: "Vaciar carrito",
     proceder_paiement: "Proceder al pago",
-    
-    // Checkout
     informations_livraison: "Información de envío",
     adresse: "Dirección",
     telephone: "Teléfono",
@@ -275,8 +289,6 @@ const translations: Record<Language, Record<string, string>> = {
     total_paye: "Total pagado",
     voir_commandes: "Ver mis pedidos",
     continuer_achats: "Seguir comprando",
-    
-    // Admin
     administration: "Administración",
     connecte_commme: "Conectado como",
     tester_connexion: "Probar conexión",
@@ -294,8 +306,6 @@ const translations: Record<Language, Record<string, string>> = {
     choisir_image: "Elegir imagen",
     supprimer_image: "Eliminar imagen",
     url_image: "O pegar URL de imagen",
-    
-    // Auth
     creer_compte: "Crear cuenta",
     rejoindre: "Únete a Étoffe Élégante",
     nom_complet: "Nombre completo",
@@ -306,168 +316,82 @@ const translations: Record<Language, Record<string, string>> = {
     pas_compte: "¿No tienes cuenta?",
     se_connecter: "Iniciar sesión",
     sinscrire: "Registrarse",
+    mdp_incorrect: "Correo o contraseña incorrectos",
+    email_utilise: "Este correo ya está en uso",
+    mdp_non_correspondent: "Las contraseñas no coinciden",
+    dimanche: "Domingo",
+    lundi: "Lunes",
+    mardi: "Martes",
+    mercredi: "Miércoles",
+    jeudi: "Jueves",
+    vendredi: "Viernes",
+    samedi: "Sábado",
   },
   ar: {
-    // Navigation
+    accueil: "الرئيسية",
     tissus: "الأقمشة",
     sacs: "الحقائب",
-    nouveautes: "الواصل حديثاً",
-    apropos: "عن",
-    admin: "مدير",
     connexion: "تسجيل الدخول",
     inscription: "إنشاء حساب",
     deconnexion: "تسجيل الخروج",
-    recherche: "بحث...",
     panier: "السلة",
-    
-    // Home
-    hero_title: "أقمشة وحقائب أنيقة",
-    hero_subtitle: "مجموعات أصلية وعصرية لإبراز أناقتك",
-    voir_tissus: "عرض الأقمشة",
-    voir_sacs: "عرض الحقائب",
-    produits_populaires: "المنتجات الأكثر مبيعاً",
-    
-    // Services
-    livraison_rapide: "توصيل سريع",
-    paiement_securise: "دفع آمن",
-    retour_facile: "إرجاع سهل",
-    whatsapp: "واتساب 24/7",
-    
-    // Shop
-    nos_collections: "مجموعاتنا",
-    tous: "الكل",
-    aucun_produit: "لا توجد منتجات",
     ajouter_au_panier: "أضف إلى السلة",
-    ajoute_au_panier: "تمت الإضافة إلى السلة",
-    
-    // Product
-    retour: "رجوع",
-    description: "الوصف",
-    stock: "المخزون",
-    en_vedette: "مميز",
-    
-    // Cart
     mon_panier: "سلتي",
     vide: "سلتك فارغة",
-    decouvrir_boutique: "استكشف المتجر",
-    produit: "المنتج",
-    prix: "السعر",
-    quantite: "الكمية",
-    total: "المجموع",
-    sous_total: "المجموع الفرعي",
-    livraison: "الشحن",
-    gratuite: "مجاني",
-    vider_panier: "إفراغ السلة",
-    proceder_paiement: "المتابعة للدفع",
-    
-    // Checkout
-    informations_livraison: "معلومات التوصيل",
-    adresse: "عنوان التوصيل",
-    telephone: "رقم الهاتف",
-    continuer_paiement: "المتابعة للدفع",
-    mode_paiement: "طريقة الدفع",
-    confirmation: "تم تأكيد الطلب!",
-    commande_validee: "تم تأكيد الدفع. ستتلقى طلبك خلال 48 ساعة.",
-    reference: "المرجع",
-    total_paye: "المبلغ المدفوع",
-    voir_commandes: "عرض طلباتي",
-    continuer_achats: "مواصلة التسوق",
-    
-    // Admin
-    administration: "لوحة التحكم",
-    connecte_commme: "متصل كـ",
-    tester_connexion: "اختبار الاتصال",
-    total_produits: "إجمالي المنتجات",
-    ajouter_produit: "إضافة منتج",
-    modifier_produit: "تعديل منتج",
-    supprimer: "حذف",
-    annuler: "إلغاء",
-    mettre_a_jour: "تحديث",
-    nom_produit: "الاسم",
-    description_produit: "الوصف",
-    prix_fcfa: "السعر (FCFA)",
-    categorie: "الفئة",
-    image_produit: "صورة المنتج",
-    choisir_image: "اختر صورة",
-    supprimer_image: "حذف الصورة",
-    url_image: "أو ألصق رابط صورة",
-    
-    // Auth
-    creer_compte: "إنشاء حساب",
-    rejoindre: "انضم إلى إيتوف إيليغانت",
-    nom_complet: "الاسم الكامل",
-    email: "البريد الإلكتروني",
-    mot_de_passe: "كلمة المرور",
-    confirmer_mdp: "تأكيد كلمة المرور",
-    deja_compte: "لديك حساب بالفعل؟",
-    pas_compte: "ليس لديك حساب؟",
-    se_connecter: "تسجيل الدخول",
-    sinscrire: "إنشاء حساب",
+    nos_collections: "مجموعاتنا",
+    tous: "الكل",
+    aucun_produit_trouve: "لا توجد منتجات",
+    dimanche: "الأحد",
+    lundi: "الاثنين",
+    mardi: "الثلاثاء",
+    mercredi: "الأربعاء",
+    jeudi: "الخميس",
+    vendredi: "الجمعة",
+    samedi: "السبت",
   },
   it: {
-    // Navigation
+    accueil: "Home",
     tissus: "Tessuti",
     sacs: "Borse",
-    nouveautes: "Novità",
-    apropos: "Su di noi",
-    admin: "Admin",
     connexion: "Accedi",
     inscription: "Registrati",
     deconnexion: "Esci",
-    recherche: "Cerca...",
     panier: "Carrello",
-    
-    // Home
-    hero_title: "Tessuti e borse eleganti",
-    hero_subtitle: "Collezioni autentiche e moderne per rivelare il tuo stile",
-    voir_tissus: "Vedi tessuti",
-    voir_sacs: "Vedi borse",
-    produits_populaires: "Prodotti popolari",
-    
-    // Services
-    livraison_rapide: "Consegna rapida",
-    paiement_securise: "Pagamento sicuro",
-    retour_facile: "Reso facile",
-    whatsapp: "WhatsApp 24/7",
-    
-    // Shop
-    nos_collections: "Le nostre collezioni",
-    tous: "Tutti",
-    aucun_produit: "Nessun prodotto",
     ajouter_au_panier: "Aggiungi al carrello",
-    ajoute_au_panier: "è stato aggiunto al carrello",
-    
-    // Cart
     mon_panier: "Il mio carrello",
     vide: "Il carrello è vuoto",
-    decouvrir_boutique: "Scopri il negozio",
-    proceder_paiement: "Procedi al pagamento",
+    nos_collections: "Le nostre collezioni",
+    tous: "Tutti",
+    aucun_produit_trouve: "Nessun prodotto trovato",
+    dimanche: "Domenica",
+    lundi: "Lunedì",
+    mardi: "Martedì",
+    mercredi: "Mercoledì",
+    jeudi: "Giovedì",
+    vendredi: "Venerdì",
+    samedi: "Sabato",
   },
   de: {
-    // Navigation
+    accueil: "Startseite",
     tissus: "Stoffe",
     sacs: "Taschen",
-    nouveautes: "Neuheiten",
-    apropos: "Über uns",
-    admin: "Admin",
     connexion: "Anmelden",
     inscription: "Registrieren",
     deconnexion: "Abmelden",
-    recherche: "Suchen...",
     panier: "Warenkorb",
-    
-    // Home
-    hero_title: "Elegante Stoffe & Taschen",
-    hero_subtitle: "Authentische und moderne Kollektionen, um Ihren Stil zu enthüllen",
-    voir_tissus: "Stoffe ansehen",
-    voir_sacs: "Taschen ansehen",
-    produits_populaires: "Beliebte Produkte",
-    
-    // Cart
+    ajouter_au_panier: "In den Warenkorb",
     mon_panier: "Mein Warenkorb",
     vide: "Ihr Warenkorb ist leer",
-    decouvrir_boutique: "Shop entdecken",
-    proceder_paiement: "Zur Kasse gehen",
+    nos_collections: "Unsere Kollektionen",
+    tous: "Alle",
+    aucun_produit_trouve: "Keine Produkte gefunden",
+    dimanche: "Sonntag",
+    lundi: "Montag",
+    mardi: "Dienstag",
+    mercredi: "Mittwoch",
+    jeudi: "Donnerstag",
+    vendredi: "Freitag",
+    samedi: "Samstag",
   },
 };
 
