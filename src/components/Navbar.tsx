@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingBag, User, Menu, Search, Globe } from "lucide-react";
+import { ShoppingBag, User, Menu, Search, Globe, X } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "../contexts/CartContext";
 import { useAuth } from "../contexts/Authcontext";  
@@ -22,10 +22,8 @@ export default function Navbar() {
     }
   };
 
-  // Récupérer le nom de l'utilisateur
   const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || "Invité";
 
-  // Liste des langues disponibles
   const languages = [
     { code: "fr", name: "Français", flag: "🇫🇷" },
     { code: "en", name: "English", flag: "🇬🇧" },
@@ -39,13 +37,15 @@ export default function Navbar() {
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        {/* Barre principale */}
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="text-xl tracking-wide font-light">
+          {/* Logo - plus petit sur mobile */}
+          <Link to="/" className="text-lg sm:text-xl tracking-wide font-light truncate max-w-[150px] sm:max-w-none">
             ÉTOFFE ÉLÉGANTE
           </Link>
 
-          {/* Barre de recherche desktop */}
+          {/* Barre de recherche desktop (cachée sur mobile) */}
           <form onSubmit={handleSearch} className="hidden md:flex items-center border rounded-full px-4 py-1 w-64">
             <input
               type="text"
@@ -59,6 +59,7 @@ export default function Navbar() {
             </button>
           </form>
 
+          {/* Navigation desktop */}
           <nav className="hidden md:flex gap-8 text-sm uppercase tracking-wide">
             <Link to="/shop?category=tissu">{t("tissus")}</Link>
             <Link to="/shop?category=sac">{t("sacs")}</Link>
@@ -67,12 +68,13 @@ export default function Navbar() {
             {isAdmin && <Link to="/admin">{t("admin")}</Link>}
           </nav>
 
-          <div className="flex items-center gap-4">
-            {/* Sélecteur de langue avec drapeau */}
-            <div className="relative group">
+          {/* Icônes de droite */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Sélecteur de langue desktop */}
+            <div className="relative group hidden md:block">
               <button className="flex items-center gap-1 text-sm hover:opacity-60">
                 <Globe size={16} />
-                <span className="hidden md:inline">{currentLanguage.flag} {currentLanguage.code.toUpperCase()}</span>
+                <span className="hidden md:inline">{currentLanguage.flag}</span>
               </button>
               <div className="absolute right-0 mt-2 w-36 bg-white border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                 {languages.map((lang) => (
@@ -90,12 +92,12 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Zone utilisateur connecté avec message de bienvenue */}
+            {/* Utilisateur */}
             {user ? (
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-neutral-400 hidden md:inline">Bonjour,</span>
-                <span className="text-sm font-medium text-black hidden md:inline">{userName}</span>
-                <button onClick={logout} className="hover:opacity-60 text-sm ml-2">
+              <div className="hidden md:flex items-center gap-2">
+                <span className="text-xs text-neutral-400">Bonjour,</span>
+                <span className="text-sm font-medium text-black truncate max-w-[100px]">{userName}</span>
+                <button onClick={logout} className="hover:opacity-60 text-sm">
                   {t("deconnexion")}
                 </button>
               </div>
@@ -105,6 +107,7 @@ export default function Navbar() {
               </Link>
             )}
 
+            {/* Panier */}
             <Link to="/cart" className="relative hover:opacity-60">
               <ShoppingBag size={18} />
               {getCartCount() > 0 && (
@@ -113,31 +116,38 @@ export default function Navbar() {
                 </span>
               )}
             </Link>
-            <button className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
-              <Menu size={20} />
+
+            {/* Bouton menu mobile (burger) */}
+            <button className="md:hidden p-1" onClick={() => setIsOpen(!isOpen)}>
+              {isOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Barre de recherche mobile (visible seulement sur mobile) */}
+        <div className="md:hidden py-2">
+          <form onSubmit={handleSearch} className="flex items-center border rounded-full px-4 py-1">
+            <input
+              type="text"
+              placeholder={t("recherche")}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1 outline-none text-sm"
+            />
+            <button type="submit">
+              <Search size={18} className="text-neutral-400" />
+            </button>
+          </form>
+        </div>
+
+        {/* Menu mobile déroulant */}
         {isOpen && (
-          <div className="md:hidden py-4 space-y-3 text-sm">
-            <form onSubmit={handleSearch} className="flex items-center border rounded-full px-4 py-2 mb-3">
-              <input
-                type="text"
-                placeholder={t("recherche")}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 outline-none"
-              />
-              <button type="submit"><Search size={18} /></button>
-            </form>
-            
-            <Link to="/shop?category=tissu" className="block" onClick={() => setIsOpen(false)}>{t("tissus")}</Link>
-            <Link to="/shop?category=sac" className="block" onClick={() => setIsOpen(false)}>{t("sacs")}</Link>
-            <Link to="/shop" className="block" onClick={() => setIsOpen(false)}>{t("nouveautes")}</Link>
-            <Link to="/about" className="block" onClick={() => setIsOpen(false)}>{t("apropos")}</Link>
-            {isAdmin && <Link to="/admin" className="block" onClick={() => setIsOpen(false)}>{t("admin")}</Link>}
+          <div className="md:hidden py-4 space-y-3 text-sm border-t">
+            <Link to="/shop?category=tissu" className="block py-1" onClick={() => setIsOpen(false)}>{t("tissus")}</Link>
+            <Link to="/shop?category=sac" className="block py-1" onClick={() => setIsOpen(false)}>{t("sacs")}</Link>
+            <Link to="/shop" className="block py-1" onClick={() => setIsOpen(false)}>{t("nouveautes")}</Link>
+            <Link to="/about" className="block py-1" onClick={() => setIsOpen(false)}>{t("apropos")}</Link>
+            {isAdmin && <Link to="/admin" className="block py-1" onClick={() => setIsOpen(false)}>{t("admin")}</Link>}
             
             {/* Sélecteur de langue mobile */}
             <div className="border-t pt-3 mt-2">
