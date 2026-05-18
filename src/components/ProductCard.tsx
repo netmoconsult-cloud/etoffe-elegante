@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../contexts/CartContext";
 import { useAuth } from "../contexts/Authcontext";
 import { useLanguage } from "../contexts/LanguageContext";
+import toast from "react-hot-toast";
 
 interface Product {
   id: number;
@@ -31,11 +32,21 @@ export default function ProductCard({ product }: { product: Product }) {
     }
     
     addToCart({ ...product, quantity: 0 }, 1);
-    alert(`${product.name} ${t("ajoute_au_panier")}`);
+    
+    toast.success(`${product.name} ${t("ajoute_au_panier")}`, {
+      duration: 3000,
+      position: "top-right",
+      icon: "🛒",
+      style: {
+        background: "#1a2a3a",
+        color: "#fff",
+        borderRadius: "12px",
+      },
+    });
   };
 
   return (
-    <Link to={`/product/${product.id}`} className="group block">
+    <Link to={`/product/${product.id}`} className="group">
       <div className="bg-white rounded-xl overflow-hidden hover:shadow-lg transition">
         <img 
           src={product.image} 
